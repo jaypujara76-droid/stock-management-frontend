@@ -1,4 +1,4 @@
-import { Box, Button, Paper, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, FormControlLabel, Paper, TextField, Typography } from "@mui/material";
 
 import { useState } from "react";
 
@@ -21,6 +21,8 @@ function LoginPage() {
   const [errors, setErrors] = useState({});
 
   const [loading, setLoading] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,9 +71,7 @@ function LoginPage() {
 
       toast.success("Login Successful");
 
-      setTimeout(() => {
-        window.location.href = "/stocks";
-      }, 1500);
+      navigate("/stocks", { replace: true });
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     } finally {
@@ -99,6 +99,7 @@ function LoginPage() {
         alignItems="center"
         minHeight="100vh"
         sx={{
+          width: "100%",
           backgroundColor: "#f5f5f5",
           padding: 2,
         }}
@@ -107,6 +108,8 @@ function LoginPage() {
         sx={{
           padding: 4,
           width: 400,
+          maxWidth: "100%",
+          mx: "auto",
           boxShadow: 3,
         }}
       >
@@ -114,7 +117,11 @@ function LoginPage() {
           Login
         </Typography>
 
-        <form onSubmit={handleSubmit}>
+        <Typography variant="body2" mb={2} color="text.secondary">
+          Please log in with your registered first name and password.
+        </Typography>
+
+        <form onSubmit={handleSubmit} noValidate>
           <TextField
             fullWidth
             label="First Name"
@@ -124,20 +131,29 @@ function LoginPage() {
             onChange={handleChange}
             error={!!errors.firstName}
             helperText={errors.firstName}
-            required
           />
 
           <TextField
             fullWidth
             label="Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
             margin="normal"
             value={formData.password}
             onChange={handleChange}
             error={!!errors.password}
             helperText={errors.password}
-            required
+          />
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={showPassword}
+                onChange={(e) => setShowPassword(e.target.checked)}
+              />
+            }
+            label="Show password"
+            sx={{ mt: 1 }}
           />
 
           <Button

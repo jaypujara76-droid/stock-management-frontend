@@ -1,7 +1,8 @@
 import {
   Routes,
   Route,
-  Navigate
+  Navigate,
+  useLocation
 } from "react-router-dom";
 
 import LoginPage
@@ -18,12 +19,9 @@ from "./pages/OrderPage";
 
 function App() {
 
-  const token =
-    localStorage.getItem("token");
+  useLocation();
 
-  const ProtectedAuthRoute = ({ element }) => {
-    return token ? <Navigate to="/stocks" /> : element;
-  };
+  const token = localStorage.getItem("token");
 
   return (
 
@@ -31,12 +29,19 @@ function App() {
 
       <Route
         path="/login"
-        element={<ProtectedAuthRoute element={<LoginPage />} />}
+        element={token ? <Navigate to="/stocks" /> : <LoginPage />}
       />
 
       <Route
         path="/register"
-        element={<ProtectedAuthRoute element={<RegisterPage />} />}
+        element={token ? <Navigate to="/stocks" /> : <RegisterPage />}
+      />
+
+      <Route
+        path="/"
+        element={
+          token ? <Navigate to="/stocks" /> : <Navigate to="/login" />
+        }
       />
 
       <Route

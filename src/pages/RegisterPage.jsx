@@ -1,6 +1,8 @@
 import {
   Box,
   Button,
+  Checkbox,
+  FormControlLabel,
   Paper,
   TextField,
   Typography
@@ -36,9 +38,12 @@ function RegisterPage() {
   const [loading, setLoading] =
     useState(false);
 
+  const [showPassword, setShowPassword] =
+    useState(false);
+
   const validatePassword = (password) => {
     const minLength = password.length >= 8;
-    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
     const hasDigit = /[0-9]/.test(password);
     return minLength && hasSpecialChar && hasDigit;
   };
@@ -155,6 +160,7 @@ function RegisterPage() {
         alignItems="center"
         minHeight="100vh"
         sx={{
+          width: "100%",
           backgroundColor: "#f5f5f5",
           padding: 2
         }}
@@ -164,6 +170,8 @@ function RegisterPage() {
         sx={{
           padding: 4,
           width: 400,
+          maxWidth: "100%",
+          mx: "auto",
           boxShadow: 3
         }}
       >
@@ -176,7 +184,7 @@ function RegisterPage() {
           Register
         </Typography>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
 
           <TextField
             fullWidth
@@ -187,7 +195,6 @@ function RegisterPage() {
             onChange={handleChange}
             error={!!errors.firstName}
             helperText={errors.firstName}
-            required
           />
 
           <TextField
@@ -199,33 +206,41 @@ function RegisterPage() {
             onChange={handleChange}
             error={!!errors.lastName}
             helperText={errors.lastName}
-            required
           />
 
           <TextField
             fullWidth
             label="Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
             margin="normal"
             value={formData.password}
             onChange={handleChange}
             error={!!errors.password}
             helperText={errors.password}
-            required
           />
 
           <TextField
             fullWidth
             label="Confirm Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="confirmPassword"
             margin="normal"
             value={formData.confirmPassword}
             onChange={handleChange}
             error={!!errors.confirmPassword}
             helperText={errors.confirmPassword}
-            required
+          />
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={showPassword}
+                onChange={(e) => setShowPassword(e.target.checked)}
+              />
+            }
+            label="Show passwords"
+            sx={{ mt: 1 }}
           />
 
           <Button

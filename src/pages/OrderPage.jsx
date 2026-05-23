@@ -235,6 +235,7 @@ function OrderPage() {
         stocks={stocks}
       />
 
+    </Box>
     </>
   );
 }
