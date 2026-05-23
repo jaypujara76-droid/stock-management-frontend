@@ -7,8 +7,20 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TableSortLabel
+  TableSortLabel,
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from "@mui/material";
+
+import DeleteIcon from "@mui/icons-material/Delete";
+
+import { useState } from "react";
+
+import { toast } from "react-toastify";
 
 import api
 from "../services/api";
@@ -20,34 +32,55 @@ function OrderTable({
   setSortOrder
 }) {
 
-  const deleteOrder = async (id) => {
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+
+  const handleDeleteClick = (id) => {
+    setSelectedOrderId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedOrderId) return;
 
     try {
 
       await api.delete(
-        `/orders/${id}`
+        `/orders/${selectedOrderId}`
       );
+
+      toast.success("Order deleted successfully");
 
       await fetchOrders();
 
     } catch (error) {
 
-      alert(
-        error.response?.data?.message
+      toast.error(
+        error.response?.data?.message || "Error deleting order"
       );
+    } finally {
+      setDeleteConfirmOpen(false);
+      setSelectedOrderId(null);
     }
   };
 
-  return (
+  const handleCancelDelete = () => {
+    setDeleteConfirmOpen(false);
+    setSelectedOrderId(null);
+  };
 
-    <TableContainer
-      component={Paper}
-      sx={{
-        boxShadow: "none",
-        border: "1px solid #ccc",
-        borderRadius: 0
-      }}
-    >
+  return (
+    <>
+      <TableContainer
+        component={Paper}
+        sx={{
+          boxShadow: "none",
+          border: "1px solid #ccc",
+          borderRadius: 0,
+          maxHeight: "calc(100vh - 280px)",
+          overflow: "auto"
+        }}
+      >
 
       <Table>
 
@@ -142,16 +175,19 @@ function OrderTable({
 
                   <TableCell>
 
-                    <Button
-                      color="error"
-                      onClick={() =>
-                        deleteOrder(
-                          order._id
-                        )
-                      }
-                    >
-                      Delete
-                    </Button>
+                    <Tooltip title="Delete Order">
+                      <IconButton
+                        color="error"
+                        size="small"
+                        onClick={() =>
+                          handleDeleteClick(
+                            order._id
+                          )
+                        }
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
 
                   </TableCell>
 
@@ -178,6 +214,31 @@ function OrderTable({
       </Table>
 
     </TableContainer>
+
+    <Dialog
+      open={deleteConfirmOpen}
+      onClose={handleCancelDelete}
+    >
+      <DialogTitle>
+        Confirm Delete
+      </DialogTitle>
+      <DialogContent>
+        Are you sure you want to delete this order? 
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCancelDelete}>
+          Cancel
+        </Button>
+        <Button 
+          onClick={handleConfirmDelete} 
+          color="error" 
+          variant="contained"
+        >
+          Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
+    </>
   );
 }
 

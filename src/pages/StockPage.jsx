@@ -11,6 +11,10 @@ import {
   useCallback
 } from "react";
 
+import { ToastContainer } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
+
 import Sidebar
 from "../components/Sidebar";
 
@@ -82,13 +86,26 @@ function StockPage() {
 
   return (
 
-    <Box
-      sx={{
-        display: "flex",
-        backgroundColor: "#f5f5f5",
-        minHeight: "100vh"
-      }}
-    >
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <Box
+        sx={{
+          display: "flex",
+          backgroundColor: "#f5f5f5",
+          minHeight: "100vh"
+        }}
+      >
 
       <Sidebar />
 
@@ -188,6 +205,7 @@ function StockPage() {
       />
 
     </Box>
+    </>
   );
 }
 

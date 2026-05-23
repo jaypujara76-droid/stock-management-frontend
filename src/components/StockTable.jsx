@@ -9,8 +9,19 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-  Tooltip
+  Tooltip,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from "@mui/material";
+
+import DeleteIcon from "@mui/icons-material/Delete";
+
+import { useState } from "react";
+
+import { toast } from "react-toastify";
 
 import api
 from "../services/api";
@@ -22,33 +33,55 @@ function StockTable({
   setSortOrder
 }) {
 
-  const deleteStock = async (id) => {
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [selectedStockId, setSelectedStockId] = useState(null);
+
+  const handleDeleteClick = (id) => {
+    setSelectedStockId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedStockId) return;
 
     try {
 
       await api.delete(
-        `/stocks/${id}`
+        `/stocks/${selectedStockId}`
       );
+
+      toast.success("Stock deleted successfully");
 
       await fetchStocks();
 
     } catch (error) {
 
-      alert(
-        error.response?.data?.message
+      toast.error(
+        error.response?.data?.message || "Error deleting stock"
       );
+    } finally {
+      setDeleteConfirmOpen(false);
+      setSelectedStockId(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmOpen(false);
+    setSelectedStockId(null);
   };
 
   return (
 
-    <TableContainer
-      component={Paper}
-      sx={{
-        boxShadow: "none",
-        border: "1px solid #ccc"
-      }}
-    >
+    <>
+      <TableContainer
+        component={Paper}
+        sx={{
+          boxShadow: "none",
+          border: "1px solid #ccc",
+          maxHeight: "calc(100vh - 280px)",
+          overflow: "auto"
+        }}
+      >
 
       <Table>
 
@@ -153,19 +186,20 @@ function StockTable({
                       }
                     >
                       <span>
-                        <Button
+                        <IconButton
                           color="error"
+                          size="small"
                           disabled={
                             (stock.orderQty || 0) > 0
                           }
                           onClick={() =>
-                            deleteStock(
+                            handleDeleteClick(
                               stock._id
                             )
                           }
                         >
-                          Delete
-                        </Button>
+                          <DeleteIcon />
+                        </IconButton>
                       </span>
                     </Tooltip>
 
@@ -194,6 +228,31 @@ function StockTable({
       </Table>
 
     </TableContainer>
+
+    <Dialog
+      open={deleteConfirmOpen}
+      onClose={handleCancelDelete}
+    >
+      <DialogTitle>
+        Confirm Delete
+      </DialogTitle>
+      <DialogContent>
+        Are you sure you want to delete this stock? This action cannot be undone.
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCancelDelete}>
+          Cancel
+        </Button>
+        <Button 
+          onClick={handleConfirmDelete} 
+          color="error" 
+          variant="contained"
+        >
+          Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
+    </>
   );
 }
 

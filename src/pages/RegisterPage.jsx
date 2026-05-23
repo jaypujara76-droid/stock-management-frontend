@@ -12,6 +12,10 @@ from "react";
 import { useNavigate, Link }
 from "react-router-dom";
 
+import { ToastContainer, toast } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
+
 import api from "../services/api";
 
 function RegisterPage() {
@@ -31,6 +35,13 @@ function RegisterPage() {
 
   const [loading, setLoading] =
     useState(false);
+
+  const validatePassword = (password) => {
+    const minLength = password.length >= 8;
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+    const hasDigit = /[0-9]/.test(password);
+    return minLength && hasSpecialChar && hasDigit;
+  };
 
   const handleChange = (e) => {
 
@@ -65,6 +76,9 @@ function RegisterPage() {
     if (!formData.password) {
       newErrors.password =
         "Password is required";
+    } else if (!validatePassword(formData.password)) {
+      newErrors.password =
+        "Password must be at least 8 characters with 1 special character and 1 digit";
     }
 
     if (!formData.confirmPassword) {
@@ -102,16 +116,18 @@ function RegisterPage() {
         formData
       );
 
-      alert(
+      toast.success(
         "Registration Successful"
       );
 
-      navigate("/login");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
 
     } catch (error) {
 
-      alert(
-        error.response?.data?.message
+      toast.error(
+        error.response?.data?.message || "Registration failed"
       );
     } finally {
 
@@ -120,17 +136,29 @@ function RegisterPage() {
   };
 
   return (
-
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="100vh"
-      sx={{
-        backgroundColor: "#f5f5f5",
-        padding: 2
-      }}
-    >
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+        sx={{
+          backgroundColor: "#f5f5f5",
+          padding: 2
+        }}
+      >
 
       <Paper
         sx={{
@@ -242,6 +270,7 @@ function RegisterPage() {
       </Paper>
 
     </Box>
+    </>
   );
 }
 

@@ -21,18 +21,22 @@ function App() {
   const token =
     localStorage.getItem("token");
 
+  const ProtectedAuthRoute = ({ element }) => {
+    return token ? <Navigate to="/stocks" /> : element;
+  };
+
   return (
 
     <Routes>
 
       <Route
         path="/login"
-        element={<LoginPage />}
+        element={<ProtectedAuthRoute element={<LoginPage />} />}
       />
 
       <Route
         path="/register"
-        element={<RegisterPage />}
+        element={<ProtectedAuthRoute element={<RegisterPage />} />}
       />
 
       <Route

@@ -4,6 +4,10 @@ import { useState } from "react";
 
 import { useNavigate, Link } from "react-router-dom";
 
+import { ToastContainer, toast } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
+
 import api from "../services/api";
 
 function LoginPage() {
@@ -63,26 +67,42 @@ function LoginPage() {
 
       localStorage.setItem("token", response.data.data.token);
 
-      alert("Login Successful");
+      toast.success("Login Successful");
 
-      window.location.href = "/stocks";
+      setTimeout(() => {
+        window.location.href = "/stocks";
+      }, 1500);
     } catch (error) {
-      alert(error.response?.data?.message);
+      toast.error(error.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      height="100vh"
-      sx={{
-        backgroundColor: "#f5f5f5",
-      }}
-    >
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+        sx={{
+          backgroundColor: "#f5f5f5",
+          padding: 2,
+        }}
+      >
       <Paper
         sx={{
           padding: 4,
@@ -150,6 +170,7 @@ function LoginPage() {
         </Typography>
       </Paper>
     </Box>
+    </>
   );
 }
 

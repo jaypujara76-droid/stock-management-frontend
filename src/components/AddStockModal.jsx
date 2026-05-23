@@ -10,6 +10,8 @@ import {
 
 import { useState } from "react";
 
+import { toast } from "react-toastify";
+
 import api from "../services/api";
 
 function AddStockModal({
@@ -84,7 +86,7 @@ function AddStockModal({
 
       console.log("Stock created:", createResponse.data);
 
-      alert(
+      toast.success(
         "Stock Added Successfully"
       );
 
@@ -122,7 +124,7 @@ function AddStockModal({
           name: message
         });
       } else {
-        alert(message);
+        toast.error(message);
       }
     }
   };

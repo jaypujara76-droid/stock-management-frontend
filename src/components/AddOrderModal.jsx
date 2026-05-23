@@ -13,6 +13,8 @@ import {
 
 import { useState } from "react";
 
+import { toast } from "react-toastify";
+
 import api from "../services/api";
 
 function AddOrderModal({
@@ -111,7 +113,7 @@ function AddOrderModal({
 
       console.log("Order created:", createResponse.data);
 
-      alert(
+      toast.success(
         "Order Added Successfully"
       );
 
@@ -135,7 +137,7 @@ function AddOrderModal({
 
       console.error("Error adding order:", error);
 
-      alert(
+      toast.error(
         error.response?.data?.message || "Error adding order"
       );
     }
@@ -183,7 +185,7 @@ function AddOrderModal({
           >
 
             {
-              stocks.map((stock) => (
+              stocks.filter((stock) => stock.qty > 0).map((stock) => (
 
                 <MenuItem
                   key={stock._id}
