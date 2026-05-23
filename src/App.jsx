@@ -5,6 +5,10 @@ import {
   useLocation
 } from "react-router-dom";
 
+import { useEffect, useState } from "react";
+
+import api from "./services/api";
+
 import LoginPage
 from "./pages/LoginPage";
 
@@ -18,10 +22,40 @@ import OrderPage
 from "./pages/OrderPage";
 
 function App() {
+  const location = useLocation();
 
-  useLocation();
+  const [authVerified, setAuthVerified] = useState(false);
+  const [tokenValid, setTokenValid] = useState(false);
 
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+    const verifyToken = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setTokenValid(false);
+        setAuthVerified(true);
+        return;
+      }
+
+      try {
+        await api.get("/auth/validate");
+        setTokenValid(true);
+      } catch {
+        localStorage.removeItem("token");
+        setTokenValid(false);
+      } finally {
+        setAuthVerified(true);
+      }
+    };
+
+    verifyToken();
+  }, [location.pathname]);
+
+  if (!authVerified) {
+    return null;
+  }
+
+  const token = tokenValid;
 
   return (
 
