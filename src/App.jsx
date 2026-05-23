@@ -50,6 +50,19 @@ function App() {
     verifyToken();
   }, [location.pathname]);
 
+  // Listen for logout in other tabs
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "token" && !e.newValue) {
+        setTokenValid(false);
+        window.location.href = "/login";
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
   if (!authVerified) {
     return null;
   }
