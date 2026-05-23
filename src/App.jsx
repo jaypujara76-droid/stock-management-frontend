@@ -1,8 +1,7 @@
 import {
   Routes,
   Route,
-  Navigate,
-  useLocation
+  Navigate
 } from "react-router-dom";
 
 import { useEffect, useState } from "react";
@@ -22,8 +21,6 @@ import OrderPage
 from "./pages/OrderPage";
 
 function App() {
-  const location = useLocation();
-
   const [authVerified, setAuthVerified] = useState(false);
   const [tokenValid, setTokenValid] = useState(false);
 
@@ -49,7 +46,7 @@ function App() {
     };
 
     verifyToken();
-  }, [location.pathname]);
+  }, []);
 
   if (!authVerified) {
     return null;
