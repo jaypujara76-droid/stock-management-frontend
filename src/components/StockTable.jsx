@@ -14,10 +14,13 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Box
 } from "@mui/material";
 
 import DeleteIcon from "@mui/icons-material/Delete";
+
+import EditIcon from "@mui/icons-material/Edit";
 
 import { useState } from "react";
 
@@ -25,6 +28,9 @@ import { toast } from "react-toastify";
 
 import api
 from "../services/api";
+
+import EditStockModal
+from "./EditStockModal";
 
 function StockTable({
   stocks = [],
@@ -35,6 +41,8 @@ function StockTable({
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [selectedStockId, setSelectedStockId] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedStock, setSelectedStock] = useState(null);
 
   const handleDeleteClick = (id) => {
     setSelectedStockId(id);
@@ -68,6 +76,16 @@ function StockTable({
   const handleCancelDelete = () => {
     setDeleteConfirmOpen(false);
     setSelectedStockId(null);
+  };
+
+  const handleEditClick = (stock) => {
+    setSelectedStock(stock);
+    setEditModalOpen(true);
+  };
+
+  const handleEditClose = () => {
+    setEditModalOpen(false);
+    setSelectedStock(null);
   };
 
   return (
@@ -178,30 +196,44 @@ function StockTable({
 
                   <TableCell>
 
-                    <Tooltip
-                      title={
-                        (stock.orderQty || 0) > 0
-                          ? "Cannot delete stock with active orders"
-                          : "Delete stock"
-                      }
-                    >
-                      <span>
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      <Tooltip title="Edit stock">
                         <IconButton
-                          color="error"
+                          color="primary"
                           size="small"
-                          disabled={
-                            (stock.orderQty || 0) > 0
-                          }
                           onClick={() =>
-                            handleDeleteClick(
-                              stock._id
-                            )
+                            handleEditClick(stock)
                           }
                         >
-                          <DeleteIcon />
+                          <EditIcon />
                         </IconButton>
-                      </span>
-                    </Tooltip>
+                      </Tooltip>
+
+                      <Tooltip
+                        title={
+                          (stock.orderQty || 0) > 0
+                            ? "Cannot delete stock with active orders"
+                            : "Delete stock"
+                        }
+                      >
+                        <span>
+                          <IconButton
+                            color="error"
+                            size="small"
+                            disabled={
+                              (stock.orderQty || 0) > 0
+                            }
+                            onClick={() =>
+                              handleDeleteClick(
+                                stock._id
+                              )
+                            }
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                    </Box>
 
                   </TableCell>
 
@@ -252,6 +284,14 @@ function StockTable({
         </Button>
       </DialogActions>
     </Dialog>
+
+    <EditStockModal
+      open={editModalOpen}
+      onClose={handleEditClose}
+      stock={selectedStock}
+      fetchStocks={fetchStocks}
+    />
+
     </>
   );
 }
